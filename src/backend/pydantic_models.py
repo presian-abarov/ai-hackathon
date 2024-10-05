@@ -15,7 +15,9 @@ class SearchResponse(BaseModel):
     documents: list[Document]
 
 
-class ClassifyRequest(BaseModel): ...
+class ClassifyTextRequest(BaseModel):
+    content: str
 
 
-class ClassifyResponse(BaseModel): ...
+class ClassifyTextResponse(BaseModel):
+    tags: list[str]
