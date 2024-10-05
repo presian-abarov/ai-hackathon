@@ -2,7 +2,8 @@ from pydantic import BaseModel, UUID4
 
 
 class SearchRequest(BaseModel):
-    tags: list[str]
+    filter_by_tags: list[str] | None
+    pagination_offset: int = 0
 
 
 class Document(BaseModel):

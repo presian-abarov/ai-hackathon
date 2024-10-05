@@ -1,9 +1,6 @@
-from typing import Annotated, Literal
-from uuid import uuid4
 from fastapi.applications import FastAPI
-from fastapi import File, Response, UploadFile, HTTPException
-from csv import DictReader
 import logging
+from uuid import uuid4
 from contextlib import asynccontextmanager
 
 from pydantic_models import (
@@ -12,27 +9,26 @@ from pydantic_models import (
     SearchResponse,
     ClassifyTextRequest,
     ClassifyTextResponse,
-    BulkUploadResponse,
 )
 
 
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
 
-db: dict = {}
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):  # noqa
-    global db
     yield
 
 
 app: FastAPI = FastAPI(lifespan=lifespan)
 
 
-@app.get("/search-by-tag")
+@app.post("/search-by-tag")
 async def search(request: SearchRequest) -> SearchResponse:
+    # TODO:
+    # if request.filter_by_tags:
+    #     return SearchResponse(documents=[])
     return SearchResponse(
         documents=[
             Document(
@@ -45,6 +41,7 @@ async def search(request: SearchRequest) -> SearchResponse:
     )
 
 
-@app.get("/classify-text")
+# TODO: should this add to the database?
+@app.post("/classify-text")
 async def classify(request: ClassifyTextRequest) -> ClassifyTextResponse:
-    return ClassifyTextResponse(tags=["hello", "tag2"])
+    return ClassifyTextResponse(tags=[tag for tag in ["adsf", "jjjj"]])
