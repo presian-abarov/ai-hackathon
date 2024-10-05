@@ -1,5 +1,8 @@
+from typing import Annotated, Literal
 from uuid import uuid4
 from fastapi.applications import FastAPI
+from fastapi import File, Response, UploadFile, HTTPException
+from csv import DictReader
 import logging
 from contextlib import asynccontextmanager
 
@@ -7,8 +10,9 @@ from pydantic_models import (
     Document,
     SearchRequest,
     SearchResponse,
-    ClassifyRequest,
-    ClassifyResponse,
+    ClassifyTextRequest,
+    ClassifyTextResponse,
+    BulkUploadResponse,
 )
 
 
@@ -33,11 +37,14 @@ async def search(request: SearchRequest) -> SearchResponse:
         documents=[
             Document(
                 document_id=uuid4(), content="Lorem ipsum", tags=["holiday", "news"]
-            )
+            ),
+            Document(
+                document_id=uuid4(), content="dolor sit amet", tags=["ok", "news"]
+            ),
         ]
     )
 
 
-@app.get("/classify")
-async def classify(request: ClassifyRequest) -> ClassifyResponse:
-    return ClassifyResponse()
+@app.get("/classify-text")
+async def classify(request: ClassifyTextRequest) -> ClassifyTextResponse:
+    return ClassifyTextResponse(tags=["hello", "tag2"])
