@@ -1,1 +1,21 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, UUID4
+
+
+class SearchRequest(BaseModel):
+    tags: list[str]
+
+
+class Document(BaseModel):
+    document_id: UUID4
+    content: str
+    tags: list[str]
+
+
+class SearchResponse(BaseModel):
+    documents: list[Document]
+
+
+class ClassifyRequest(BaseModel): ...
+
+
+class ClassifyResponse(BaseModel): ...
