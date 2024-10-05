@@ -27,7 +27,7 @@ uv pip install -r requirements.txt
 ## Running the back-end
 
 ```bash
-docker /build -t aib:latest .
+docker build -t aib:latest .
 docker run --rm -p 8080:8080 aib:latest
 ```
 
