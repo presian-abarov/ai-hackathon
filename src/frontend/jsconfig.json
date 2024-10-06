@@ -1,9 +1,3 @@
-{
-  "compilerOptions": {
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ]
-    }
-  }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:b9125427c4ce0e29799deca788101396bd10f625e69e59ab23e482d1c888ddd3
+size 92
