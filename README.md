@@ -57,5 +57,3 @@ docker run --rm -p 8080:8080 aib:latest
 - Run `pipeline.ipynb` in a proper execution environment (such as Airflow)
 - Use a proper database instead of JSON
 - Expose the AI pipeline as an API endpoint that can be called from the front-end
-- Standardize python dependencies (`environment.yml` and `requirements.txt`)
-
