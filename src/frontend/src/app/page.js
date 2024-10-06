@@ -1,101 +1,131 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { motion, AnimatePresence } from "framer-motion"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import Header from "../components/header"
+
+export default function Component() {
+  const [isFileUpload, setIsFileUpload] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [text, setText] = useState("");
+  const router = useRouter();
+
+  const containerVariants = {
+    hidden: { scale: 0.8, opacity: 1, y: -50 },
+    visible: { scale: 1, opacity: 1, y: 0, transition: { duration: 0.5 } },
+    exit: { scale: 0.8, opacity: 1, y: -50, transition: { duration: 0.5 } },
+  }
+
+  const handleChange = (event) => {
+    setText(event.target.value);
+  };
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    const route = isFileUpload ? "/search-by-tag" : "/classify-text";
+    const bodyObject = isFileUpload ? { file: "shouldBeFile" } : { text: text };
+
+    try {
+      // TODO replace with backend API call
+      const response = await fetch("api/" + route, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bodyObject) // Should be file but for demo purposes it just reroutes
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch');
+      }
+
+      router.push(route);
+    } catch (error) {
+      console.error('An error occurred:', error);
+    } finally {
+      setLoading(false);
+    }
+    // router.push('/search-by-tag');
+
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <Header />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      <main className="p-4">
+        <div
+          className="flex justify-center items-center bg-gray-100 -mb-4 w-56 pb-4 mx-auto rounded-t-full cursor-pointer transition-all duration-300 ease-in-out hover:bg-gray-200 hover:-translate-y-1 hover:shadow-md"
+        >
+          <Label
+            htmlFor="toggle-mode"
+            className="text-gray-700 w-full text-center px-8 py-2 cursor-pointer select-none"
           >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            {isFileUpload ? "Upload file" : "Classify text"}
+          </Label>
+          <Input
+            id="toggle-mode"
+            type="checkbox"
+            className="hidden w-full"
+            onChange={() => setIsFileUpload((prev) => !prev)}
+          />
+        </div>
+
+        <div className="relative h-[300px] w-full perspective-1000">
+          <AnimatePresence initial={false} mode="wait">
+            {isFileUpload ? (
+              <motion.div
+                key="fileUpload"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="absolute w-full h-full"
+              >
+                <div className="bg-white border rounded-lg shadow-md p-6 h-full">
+                  <h2 className="text-xl font-semibold mb-4 text-gray-800">Upload a file with text</h2>
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center h-[calc(100%-2rem)] flex items-center justify-center">
+                    <Input type="file" />
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="textPaste"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="absolute w-full h-full"
+              >
+                <div className="bg-white border rounded-lg shadow-md p-6 h-full">
+                  <h2 className="text-xl font-semibold mb-4 text-gray-800">Write a tweet/post/article</h2>
+                  <Textarea
+                    placeholder="Lorem ipsum..."
+                    className="w-full h-[calc(100%-2rem)] p-2 border rounded resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={text}
+                    onChange={handleChange}
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <div className="flex justify-center mt-8">
+          <button
+            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg"
+            onClick={handleSubmit}
+            disabled={loading}
           >
-            Read our docs
-          </a>
+            {loading ? "Loading..." : "Generate tags"}
+          </button>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
-  );
+  )
 }
