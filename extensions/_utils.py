@@ -39,11 +39,13 @@ The topic is described by the following keywords: [KEYWORDS]
 Based on the above information, can you give a short label of the topic?
 """
 
+
 def replace_documents(prompt: str, docs: List[str]) -> str:
     to_replace = ""
     for doc in docs:
         to_replace += f"- {doc}\n---\n"
     return prompt.replace("[DOCUMENTS]", to_replace)
+
 
 def create_prompt(prompt: str, docs: List[str], topic: Any, topics: dict) -> str:
     keywords = list(zip(*topics[topic]))[0]
@@ -59,12 +61,9 @@ def create_prompt(prompt: str, docs: List[str], topic: Any, topics: dict) -> str
 
     return prompt
 
+
 def fetch_response_with_retry(
-    fetch_func: Callable,
-    max_retries: int = 3,
-    delay: float = 2,
-    *args,
-    **kwargs
+    fetch_func: Callable, max_retries: int = 3, delay: float = 2, *args, **kwargs
 ) -> Any:
     retries = 0
     while retries < max_retries:
@@ -78,10 +77,11 @@ def fetch_response_with_retry(
             else:
                 raise e
 
+
 def append_to_json(file_path, new_data):
     """Append new data to a JSON array stored in a file."""
     if os.path.exists(file_path):
-        with open(file_path, 'r+') as file:
+        with open(file_path, "r+") as file:
             # Load existing data
             try:
                 data = json.load(file)
@@ -96,6 +96,7 @@ def append_to_json(file_path, new_data):
             # Truncate the file to the current size
             file.truncate()
     else:
-        with open(file_path, 'w') as file:
+        with open(file_path, "w") as file:
             # Write new data in a list
             json.dump([new_data], file, indent=2)
+

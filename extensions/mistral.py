@@ -15,7 +15,7 @@ from ._utils import (
     DEFAULT_CHAT_PROMPT,
     create_prompt,
     fetch_response_with_retry,
-    append_to_json
+    append_to_json,
 )
 
 
@@ -79,7 +79,18 @@ class MistralAI(BaseRepresentation):
             current_tokens = 0
             for doc in docs:
                 # doc_tokens = self.tokenizer(doc)
-                doc_tokens = len(self.tokenizer.encode_chat_completion(ChatCompletionRequest(messages=[{"role": "user", "content": [{"type": "text", "text": doc}]}])).tokens)
+                doc_tokens = len(
+                    self.tokenizer.encode_chat_completion(
+                        ChatCompletionRequest(
+                            messages=[
+                                {
+                                    "role": "user",
+                                    "content": [{"type": "text", "text": doc}],
+                                }
+                            ]
+                        )
+                    ).tokens
+                )
                 if current_tokens + doc_tokens <= self.max_tokens:
                     truncated_docs.append(doc)
                     current_tokens += doc_tokens
